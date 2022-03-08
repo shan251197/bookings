@@ -49,3 +49,24 @@ func (m *Repository) About(rw http.ResponseWriter, r *http.Request) {
 	})
 
 }
+func (m *Repository) Reservation(rw http.ResponseWriter, r *http.Request) {
+
+	render.RenderTemplate(rw, "make-reservation.page.html", &models.TemplateData{})
+}
+func (m *Repository) Generals(rw http.ResponseWriter, r *http.Request) {
+
+	render.RenderTemplate(rw, "generals.page.html", &models.TemplateData{})
+}
+
+func (m *Repository) Majors(rw http.ResponseWriter, r *http.Request) {
+
+	render.RenderTemplate(rw, "majors.page.html", &models.TemplateData{})
+}
+func (m *Repository) Availability(rw http.ResponseWriter, r *http.Request) {
+
+	render.RenderTemplate(rw, "search-availability.page.html", &models.TemplateData{})
+}
+func (m *Repository) Contact(rw http.ResponseWriter, r *http.Request) {
+
+	render.RenderTemplate(rw, "contact.page.html", &models.TemplateData{})
+}

@@ -10,10 +10,6 @@ import (
 )
 
 func routes(app *config.AppConfig) http.Handler {
-	// mux := pat.New()
-
-	// mux.Get("/", http.HandlerFunc(handler.Repo.Home))
-	// mux.Get("/about", http.HandlerFunc(handler.Repo.About))
 
 	mux := chi.NewRouter()
 
@@ -23,6 +19,14 @@ func routes(app *config.AppConfig) http.Handler {
 
 	mux.Get("/", handler.Repo.Home)
 	mux.Get("/about", handler.Repo.About)
+	mux.Get("/generals-quarters", handler.Repo.Generals)
+	mux.Get("/majors-suite", handler.Repo.Majors)
+	mux.Get("/search-availability", handler.Repo.Availability)
+	mux.Get("/contact", handler.Repo.Contact)
+	mux.Get("/make-reservation", handler.Repo.Reservation)
+
+	fileServer := http.FileServer(http.Dir("./static/"))
+	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
 	return mux
 }
