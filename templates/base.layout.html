@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Room Reservation</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
@@ -124,6 +124,18 @@
             })
         }
 
+        {{with .Error}}
+        notify("{{.}}","error")
+        {{end}}
+
+        {{with .Flash}}
+        notify("{{.}}","success")
+        {{end}}
+
+        {{with .Warning}}
+        notify("{{.}}","warning")
+        {{end}}
+
         function prompt() {
             let toast = function (c) {
 
@@ -185,19 +197,17 @@
                     msg = "",
                     title = ""
                 } = c
-                const { value: formValues } = await Swal.fire({
+                const { value: result } = await Swal.fire({
                     title: title,
                     html: msg,
-                    backdrop: true,
+                    backdrop: false,
                     showCancelButton: true,
 
                     focusConfirm: false,
                     willOpen: () => {
-                        const el = document.getElementById("reservation-dates-model")
-                        const rp = new DateRangePicker(el, {
-                            format: "yyyy-mm-dd",
-                            showOnFocus: true,
-                        })
+                       if(c.willOpen !== undefined){
+                           c.willOpen()
+                       }
                     },
                     preConfirm: () => {
                         return [
@@ -206,14 +216,23 @@
                         ]
                     },
                     didOpen: () => {
-                        document.getElementById("start").removeAttribute("disabled")
-                        document.getElementById("end").removeAttribute("disabled")
-
+                       if(c.didOpen !== undefined){
+                           c.didOpen()
+                       }
                     }
                 })
-
-                if (formValues) {
-                    Swal.fire(JSON.stringify(formValues))
+                if(result){
+                    if(result.dismiss !== Swal.DismissReason.cancel){
+                        if(result.value !== ""){
+                            if(c.callback !== undefined){
+                                c.callback(result);
+                            }
+                        }else{
+                            c.callback(false)
+                        }
+                    }else{
+                        c.callback(false)
+                    }
                 }
             }
 

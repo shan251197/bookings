@@ -1,15 +1,17 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/shan251197/bookings/pkg/config"
-	"github.com/shan251197/bookings/pkg/handler"
-	"github.com/shan251197/bookings/pkg/render"
+	"github.com/shan251197/bookings/internal/config"
+	"github.com/shan251197/bookings/internal/handler"
+	"github.com/shan251197/bookings/internal/models"
+	"github.com/shan251197/bookings/internal/render"
 )
 
 const port = ":8000"
@@ -19,6 +21,8 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 func main() {
+
+	gob.Register(models.Reservation{})
 
 	app.InProduction = false
 

@@ -8,8 +8,9 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/shan251197/bookings/pkg/config"
-	"github.com/shan251197/bookings/pkg/models"
+	"github.com/justinas/nosurf"
+	"github.com/shan251197/bookings/internal/config"
+	"github.com/shan251197/bookings/internal/models"
 )
 
 var function = template.FuncMap{}
@@ -21,11 +22,16 @@ func NewTemplate(a *config.AppConfig) {
 	app = a
 }
 
-func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
+	td.Flash = app.Session.PopString(r.Context(), "flash")
+	td.Error = app.Session.PopString(r.Context(), "error")
+	td.Warning = app.Session.PopString(r.Context(), "warning")
+
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
-func RenderTemplate(rw http.ResponseWriter, html string, td *models.TemplateData) {
+func RenderTemplate(rw http.ResponseWriter, r *http.Request, html string, td *models.TemplateData) {
 	var tc map[string]*template.Template
 	if app.UseCache {
 		tc = app.TemplateCache
@@ -39,7 +45,7 @@ func RenderTemplate(rw http.ResponseWriter, html string, td *models.TemplateData
 	}
 
 	buf := new(bytes.Buffer)
-	td = AddDefaultData(td)
+	td = AddDefaultData(td, r)
 	_ = t.Execute(buf, td)
 
 	_, err := buf.WriteTo(rw)

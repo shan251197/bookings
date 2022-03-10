@@ -57,7 +57,40 @@
 
 </form>
 `
-        attention.custom({ msg: html, title: "Choose your dates" })
+        attention.custom({
+            msg: html,
+            title: "Choose your dates",
+            willOpen: () => {
+                const el = document.getElementById("reservation-dates-model")
+                const rp = new DateRangePicker(el, {
+                    format: "yyyy-mm-dd",
+                    showOnFocus: true,
+                    orientation: "top"
+                })
+            },
+            didOpen: () => {
+                document.getElementById("start").removeAttribute("disabled")
+                document.getElementById("end").removeAttribute("disabled")
+
+            },
+            callback: function (result) {
+                console.log("called")
+
+                let form = document.getElementById("check-availability-form")
+                let formData = new FormData(form)
+                formData.append("csrf_token", "{{.CSRFToken}}")
+
+
+                fetch("/search-availability-json", {
+                    method: "post",
+                    body: formData,
+                })
+                    .then(d => d.json())
+                    .then(d => {
+                        console.log(d)
+                    })
+            }
+        })
     })
 </script>
 {{end}}
